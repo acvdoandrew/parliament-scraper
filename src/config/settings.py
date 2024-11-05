@@ -1,26 +1,21 @@
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
+from pydantic import BaseSettings
 
 
-class Settings:
-    # Server Settings
-    HOST = os.getenv("HOST", "0.0.0.0")
-    PORT = int(os.getenv("PORT", 8000))
+class Settings(BaseSettings):
+    HOST: str = "0.0.0.0"
+    PORT: int = 8000
+    ALLOWED_ORIGINS: list = ["*"]
+    USER_AGENT: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    REQUEST_TIMEOUT: float = 30.0  # seconds
 
-    # Cache Settings
-    CACHE_TTL = int(os.getenv("CACHE_TTL", 900))
-    CACHE_MAX_SIZE = int(os.getenv("CACHE_MAX_SIZE", 100))
+    # HTTPX specific settings
+    HTTPX_TIMEOUT: float = 30.0
+    HTTPX_MAX_REDIRECTS: int = 5
+    HTTPX_VERIFY_SSL: bool = True
 
-    # CORS Settings
-    ALLOWED_ORIGINS = ["*"]
-
-    # Scraping Settings
-    REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", 30))
-    USER_AGENT = os.getenv(
-        "USER_AGENT", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-    )
+    # Optional: Add limits
+    HTTPX_LIMITS_MAX_CONNECTIONS: int = 100
+    HTTPX_LIMITS_MAX_KEEPALIVE: int = 20
 
 
 settings = Settings()
