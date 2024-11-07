@@ -17,15 +17,13 @@ async def test_scrape_bill_info(sample_bill_url, mock_bill_html):
             text = """
             <html>
                 <body>
-                    <div class="about-bill">
-                        <span class="bill-type">Senate Public Bill</span>
-                        <span class="status-label">In Progress</span>
-                        <div class="sponsor-info">
-                            <a href="/members/1234">John Doe</a>
-                        </div>
-                        <div class="last-updated">2024-01-01</div>
-                    </body>
-                </div>
+                    <div class="bill-card-type">Senate Public Bill</div>
+                    <div class="attribute-status-name">In Progress</div>
+                    <div class="bill-identity">
+                        <a href="/members/1234">John Doe</a>
+                    </div>
+                    <div class="session-date-range">2024-01-01</div>
+                </body>
             </html>
             """
 
@@ -41,12 +39,12 @@ async def test_scrape_bill_info(sample_bill_url, mock_bill_html):
     with patch("httpx.AsyncClient.get", side_effect=mock_get):
         result = await scrape_bill_info(sample_bill_url)
 
-        # Print the actual result for debugging
+        # Print actual values for debugging
         print(f"Actual bill_type: {result.bill_type}")
         print(f"Actual status: {result.status}")
         print(f"Actual sponsor_name: {result.sponsor_name}")
 
-        # Updated assertions
+        # Updated assertions to match new structure
         assert (
             result.bill_type == "Senate Public Bill"
         ), f"Expected 'Senate Public Bill' but got '{result.bill_type}'"
