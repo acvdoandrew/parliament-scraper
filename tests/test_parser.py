@@ -14,19 +14,48 @@ async def test_scrape_bill_info(sample_bill_url, mock_bill_html):
     async def mock_get(*args, **kwargs):
         class MockResponse:
             status_code = 200
-            text = mock_bill_html
+            text = """
+            <html>
+                <body>
+                    <div class="about-bill">
+                        <span class="bill-type">Senate Public Bill</span>
+                        <span class="status-label">In Progress</span>
+                        <div class="sponsor-info">
+                            <a href="/members/1234">John Doe</a>
+                        </div>
+                        <div class="last-updated">2024-01-01</div>
+                    </body>
+                </div>
+            </html>
+            """
 
             def raise_for_status(self):
                 pass
+
+            @property
+            def ok(self):
+                return True
 
         return MockResponse()
 
     with patch("httpx.AsyncClient.get", side_effect=mock_get):
         result = await scrape_bill_info(sample_bill_url)
 
-        assert result.bill_type == "Senate Public Bill"
-        assert result.status == "In Progress"
-        assert result.sponsor_name == "John Doe"
+        # Print the actual result for debugging
+        print(f"Actual bill_type: {result.bill_type}")
+        print(f"Actual status: {result.status}")
+        print(f"Actual sponsor_name: {result.sponsor_name}")
+
+        # Updated assertions
+        assert (
+            result.bill_type == "Senate Public Bill"
+        ), f"Expected 'Senate Public Bill' but got '{result.bill_type}'"
+        assert (
+            result.status == "In Progress"
+        ), f"Expected 'In Progress' but got '{result.status}'"
+        assert (
+            result.sponsor_name == "John Doe"
+        ), f"Expected 'John Doe' but got '{result.sponsor_name}'"
 
 
 @pytest.mark.asyncio
